@@ -31,31 +31,38 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static JLabel macro1StatusLabel;
+	private JLabel macro1StatusLabel;
 
-	private static JLabel macro1TimerLabel;
-	private static Timer macro1Timer;
+	private JLabel macro1TimerLabel;
+	private Timer macro1Timer;
 
-	private static JButton macro1ControlButton;
+	private JButton macro1ControlButton;
 
-	private static JLabel macro1TimerCountLabel;
-	private static JTextField macro1TimerCountInput;
+	private JLabel macro1TimerCountLabel;
+	private JTextField macro1TimerCountInput;
 
-	private static JLabel macro1KeyPressStringLabel;
-	private static JTextField macro1KeyPressStringInput;
+	private JLabel macro1KeyPressStringLabel;
+	private JTextField macro1KeyPressStringInput;
 	
-	private static Integer macro1TimerCounter;
-	private static Integer macro1TimerCounterInit = 20;
-	private static Integer macro1TimerCounterDefault = 20;
+	private Integer macro1TimerCounter;
+	private Integer macro1TimerCounterInit = 20;
+	private Integer macro1TimerCounterDefault = 20;
 	
-	private static String macro1KeyPressString;
-	private static String macro1KeyPressStringInit = "1q";
+	private String macro1KeyPressString;
+	private String macro1KeyPressStringInit = "1q";
 	
-	private static boolean macro1Enabled = false;
+	private boolean macro1Enabled = false;
 	
-	private static Map<String, Integer> keyEventLookup;
+	private Map<String, Integer> keyEventLookup;
 	
-	public RtsMacroSchedulerRow() {
+	public RtsMacroSchedulerRow(Integer timerCounter, String keyPressString) {
+		if(timerCounter != null) {
+			macro1TimerCounterInit = timerCounter;
+			macro1TimerCounterDefault = timerCounter;
+		}
+		if(keyPressString != null) {
+			macro1KeyPressStringInit = keyPressString;
+		}
 		macro1TimerCounter = macro1TimerCounterInit;
 		macro1KeyPressString = macro1KeyPressStringInit;
 		
@@ -219,7 +226,7 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
         // do things
     }
 	
-	private static void keyPress(Integer keyPress) {
+	private void keyPress(Integer keyPress) {
 		try {
 			Robot robot = new Robot();
 			robot.keyPress(keyPress);
@@ -228,7 +235,7 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 		}
 	}
 	
-	private static void loadKeyEventMap() {
+	private void loadKeyEventMap() {
 		keyEventLookup = new HashMap<String, Integer>();
 		keyEventLookup.put("0", KeyEvent.VK_0);
 		keyEventLookup.put("1", KeyEvent.VK_1);
