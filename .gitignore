@@ -5,3 +5,4 @@ bin/
 *.lnk
 .classpath
 .project
+.pat
