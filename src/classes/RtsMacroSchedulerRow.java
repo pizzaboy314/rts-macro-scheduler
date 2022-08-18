@@ -53,7 +53,7 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 	private String m_keyPressString;
 	private String m_keyPressStringInit = "1q";
 	
-	private boolean m_macro1Enabled = false;
+	private boolean m_enabled = false;
 	
 	private Map<Integer, RtsMacroSchedulerRow> m_allRows;
 	private Map<String, Integer> m_keyEventLookup;
@@ -126,7 +126,7 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 		m_controlButton = new JButton("Start Macro 1");
 		m_controlButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				m_macro1Enabled = !m_macro1Enabled;
+				m_enabled = !m_enabled;
 				
 				if(m_timerCounter != m_timerCounterInit) {
 					m_timerCounter = m_timerCounterInit;
@@ -137,7 +137,7 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 				String statusText;
 				Color statusColor;
 				
-				if(m_macro1Enabled) {
+				if(m_enabled) {
 					m_timer.start();
 					buttonText = "Stop Macro 1";
 					statusText = " ON ";
@@ -187,7 +187,7 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 							m_timerCounterInit = m_timerCounterDefault;
 							m_timerCountInput.setText(m_timerCounterInit.toString());
 						}
-						if(!m_macro1Enabled) {
+						if(!m_enabled) {
 							m_timerCounter = m_timerCounterInit;
 							m_timerLabel.setText(m_timerCounter + "");
 						}
@@ -255,9 +255,14 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 		return m_timerCounter;
 	}
 	
+	public boolean isEnabled() {
+		return m_enabled;
+	}
+
 	private boolean noStartCollisions() {
 		for(RtsMacroSchedulerRow row : m_allRows.values()) {
-			if(row.getId() != getId() && 
+			if(row.isEnabled() &&
+					row.getId() != getId() && 
 					row.getId() < getId() &&
 					(row.getTimerCounter() == getTimerCounter() || 
 					row.getTimerCounter() == getTimerCounter()+1 || 
