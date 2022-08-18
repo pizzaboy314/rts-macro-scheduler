@@ -7,10 +7,12 @@ import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
@@ -56,8 +58,22 @@ public class RtsMacroSchedulerApp extends JPanel implements ActionListener{
 		Map<Integer, RtsMacroSchedulerRow> rows = new HashMap<Integer, RtsMacroSchedulerRow>();
 		RtsMacroSchedulerRow firstRow = new RtsMacroSchedulerRow(rows, 1, 20,"1q");
 		RtsMacroSchedulerRow secondRow = new RtsMacroSchedulerRow(rows, 2, 35,"9wwww");
-		rows.put(1, firstRow);
+		rows.put(1, firstRow); 
 		rows.put(2, secondRow);
+		
+		JButton addButton = new JButton("Add Macro");
+		addButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Integer newId = Collections.max(rows.keySet()) + 1;
+				RtsMacroSchedulerRow newRow = new RtsMacroSchedulerRow(rows, newId, 20,"1q");
+				rows.put(newId, newRow); 
+				resultFrame.getContentPane().add(newRow, BorderLayout.NORTH);
+				
+				resultFrameBoundHeight += 50;
+				resultFrame.setBounds(resultFrameBoundX, resultFrameBoundY, resultFrameBoundWidth, resultFrameBoundHeight);
+			}
+		});
+		resultFrame.getContentPane().add(addButton, BorderLayout.NORTH);
 		resultFrame.getContentPane().add(firstRow, BorderLayout.NORTH);
 		resultFrame.getContentPane().add(secondRow, BorderLayout.NORTH);
 	}
