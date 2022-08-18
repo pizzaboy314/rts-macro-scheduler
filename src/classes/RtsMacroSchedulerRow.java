@@ -54,6 +54,7 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 	private boolean macro1Enabled = false;
 	
 	private Map<String, Integer> keyEventLookup;
+	private Robot VK = null;
 	
 	public RtsMacroSchedulerRow(Integer timerCounter, String keyPressString) {
 		if(timerCounter != null) {
@@ -67,6 +68,12 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 		macro1KeyPressString = macro1KeyPressStringInit;
 		
 		loadKeyEventMap();
+		
+		try {
+			VK = new Robot();
+		} catch (AWTException e1) {
+			e1.printStackTrace();
+		}
 		
 		macro1StatusLabel = new JLabel(" OFF ");
 		macro1StatusLabel.setForeground(Color.RED);
@@ -223,15 +230,14 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-        // do things
+        // stub
     }
 	
 	private void keyPress(Integer keyPress) {
-		try {
-			Robot robot = new Robot();
-			robot.keyPress(keyPress);
-		} catch (AWTException e1) {
-			e1.printStackTrace();
+		if(VK != null) {
+			VK.keyPress(keyPress);
+			VK.keyRelease(keyPress);
+			System.out.println(keyPress);
 		}
 	}
 	
