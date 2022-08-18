@@ -33,31 +33,30 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	
 	private Integer m_rowId = 0;
-	private JLabel macro1StatusLabel;
+	private JLabel m_statusLabel;
 
-	private JLabel macro1TimerLabel;
-	private Timer macro1Timer;
+	private JLabel m_timerLabel;
+	private Timer m_timer;
 
-	private JButton macro1ControlButton;
+	private JButton m_controlButton;
 
-	private JLabel macro1TimerCountLabel;
-	private JTextField macro1TimerCountInput;
+	private JLabel m_timerCountLabel;
+	private JTextField m_timerCountInput;
 
-	private JLabel macro1KeyPressStringLabel;
-	private JTextField macro1KeyPressStringInput;
+	private JLabel m_keyPressStringLabel;
+	private JTextField m_keyPressStringInput;
 	
-	private Integer macro1TimerCounter;
-
-	private Integer macro1TimerCounterInit = 20;
-	private Integer macro1TimerCounterDefault = 20;
+	private Integer m_timerCounter;
+	private Integer m_timerCounterInit = 20;
+	private Integer m_timerCounterDefault = 20;
 	
-	private String macro1KeyPressString;
-	private String macro1KeyPressStringInit = "1q";
+	private String m_keyPressString;
+	private String m_keyPressStringInit = "1q";
 	
-	private boolean macro1Enabled = false;
+	private boolean m_macro1Enabled = false;
 	
 	private Map<Integer, RtsMacroSchedulerRow> m_allRows;
-	private Map<String, Integer> keyEventLookup;
+	private Map<String, Integer> m_keyEventLookup;
 	private Robot VK = null;
 	
 	public RtsMacroSchedulerRow(Map<Integer, RtsMacroSchedulerRow> rows, Integer id, Integer timerCounter, String keyPressString) {
@@ -65,14 +64,14 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 		m_rowId = id;
 		
 		if(timerCounter != null) {
-			macro1TimerCounterInit = timerCounter;
-			macro1TimerCounterDefault = timerCounter;
+			m_timerCounterInit = timerCounter;
+			m_timerCounterDefault = timerCounter;
 		}
 		if(keyPressString != null) {
-			macro1KeyPressStringInit = keyPressString;
+			m_keyPressStringInit = keyPressString;
 		}
-		macro1TimerCounter = macro1TimerCounterInit;
-		macro1KeyPressString = macro1KeyPressStringInit;
+		m_timerCounter = m_timerCounterInit;
+		m_keyPressString = m_keyPressStringInit;
 		
 		loadKeyEventMap();
 		
@@ -82,89 +81,89 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 			e1.printStackTrace();
 		}
 		
-		macro1StatusLabel = new JLabel(" OFF ");
-		macro1StatusLabel.setForeground(Color.RED);
+		m_statusLabel = new JLabel(" OFF ");
+		m_statusLabel.setForeground(Color.RED);
 		
-		macro1TimerLabel = new JLabel(macro1TimerCounter + "");
-		macro1TimerLabel.setForeground(Color.WHITE);
-		macro1TimerLabel.setMinimumSize(new Dimension(50, 20));
-		macro1TimerLabel.setMaximumSize(new Dimension(50, 20));
-		macro1TimerLabel.setPreferredSize(new Dimension(50, 20));
+		m_timerLabel = new JLabel(m_timerCounter + "");
+		m_timerLabel.setForeground(Color.WHITE);
+		m_timerLabel.setMinimumSize(new Dimension(50, 20));
+		m_timerLabel.setMaximumSize(new Dimension(50, 20));
+		m_timerLabel.setPreferredSize(new Dimension(50, 20));
 		
-		macro1Timer = new Timer(1000,new ActionListener() {
+		m_timer = new Timer(1000,new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(noStartCollisions()) {
-					macro1TimerLabel.setForeground(Color.WHITE);
-					macro1TimerLabel.setText(macro1TimerCounter + "");
-					macro1TimerCounter--;
+					m_timerLabel.setForeground(Color.WHITE);
+					m_timerLabel.setText(m_timerCounter + "");
+					m_timerCounter--;
 				} else {
-					macro1TimerLabel.setForeground(Color.RED);
-					macro1TimerLabel.setText("WAIT");
+					m_timerLabel.setForeground(Color.RED);
+					m_timerLabel.setText("WAIT");
 				}
-				if(macro1TimerCounter == 0) {
-					macro1TimerLabel.setForeground(Color.GREEN);
-					macro1TimerLabel.setText("QUEUE");
-					macro1TimerCounter = macro1TimerCounterInit;
+				if(m_timerCounter == 0) {
+					m_timerLabel.setForeground(Color.GREEN);
+					m_timerLabel.setText("QUEUE");
+					m_timerCounter = m_timerCounterInit;
 					
 					StringBuilder sb = new StringBuilder();
-					for(String keyChar : macro1KeyPressString.split("")) {
+					for(String keyChar : m_keyPressString.split("")) {
 						// verify supported char
-						Integer keyPress = keyEventLookup.get(keyChar);
+						Integer keyPress = m_keyEventLookup.get(keyChar);
 						if(keyPress != null) {
 							keyPress(keyPress);
 							sb.append(keyChar);
 						}
 					}
 					
-					if(!sb.toString().equals(macro1KeyPressString)) {
-						macro1KeyPressString = sb.toString();
-						macro1KeyPressStringInput.setText(sb.toString());
+					if(!sb.toString().equals(m_keyPressString)) {
+						m_keyPressString = sb.toString();
+						m_keyPressStringInput.setText(sb.toString());
 					}
 				}
 			}
 		});
 
-		macro1ControlButton = new JButton("Start Macro 1");
-		macro1ControlButton.addActionListener(new ActionListener() {
+		m_controlButton = new JButton("Start Macro 1");
+		m_controlButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				macro1Enabled = !macro1Enabled;
+				m_macro1Enabled = !m_macro1Enabled;
 				
-				if(macro1TimerCounter != macro1TimerCounterInit) {
-					macro1TimerCounter = macro1TimerCounterInit;
-					macro1TimerLabel.setText(macro1TimerCounter + "");
+				if(m_timerCounter != m_timerCounterInit) {
+					m_timerCounter = m_timerCounterInit;
+					m_timerLabel.setText(m_timerCounter + "");
 				}
 				
 				String buttonText;
 				String statusText;
 				Color statusColor;
 				
-				if(macro1Enabled) {
-					macro1Timer.start();
+				if(m_macro1Enabled) {
+					m_timer.start();
 					buttonText = "Stop Macro 1";
 					statusText = " ON ";
 					statusColor = Color.GREEN;
 				} else {
-					macro1Timer.stop();
+					m_timer.stop();
 					buttonText = "Start Macro 1";
 					statusText = " OFF ";
 					statusColor = Color.RED;
 					
-					macro1TimerLabel.setForeground(Color.WHITE);
-					macro1TimerLabel.setText(macro1TimerCounter + "");
+					m_timerLabel.setForeground(Color.WHITE);
+					m_timerLabel.setText(m_timerCounter + "");
 				}
 				
-				macro1ControlButton.setText(buttonText);
-				macro1StatusLabel.setText(statusText);
-				macro1StatusLabel.setForeground(statusColor);
+				m_controlButton.setText(buttonText);
+				m_statusLabel.setText(statusText);
+				m_statusLabel.setForeground(statusColor);
 			}
 		});
 		
 		
-		macro1TimerCountLabel = new JLabel("  Timer: ");
-		macro1TimerCountLabel.setForeground(Color.WHITE);
+		m_timerCountLabel = new JLabel("  Timer: ");
+		m_timerCountLabel.setForeground(Color.WHITE);
 		
-		macro1TimerCountInput = new JTextField(3);
-		macro1TimerCountInput.getDocument().addDocumentListener(new DocumentListener() {
+		m_timerCountInput = new JTextField(3);
+		m_timerCountInput.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
 				updateKeyPressString();
 			}
@@ -181,30 +180,30 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 				Runnable doTextUpdate = new Runnable() {
 					@Override
 					public void run() {
-						String s = macro1TimerCountInput.getText();
+						String s = m_timerCountInput.getText();
 						try {
-							macro1TimerCounterInit = Integer.parseInt(s);
+							m_timerCounterInit = Integer.parseInt(s);
 						} catch (NumberFormatException nfe){
-							macro1TimerCounterInit = macro1TimerCounterDefault;
-							macro1TimerCountInput.setText(macro1TimerCounterInit.toString());
+							m_timerCounterInit = m_timerCounterDefault;
+							m_timerCountInput.setText(m_timerCounterInit.toString());
 						}
-						if(!macro1Enabled) {
-							macro1TimerCounter = macro1TimerCounterInit;
-							macro1TimerLabel.setText(macro1TimerCounter + "");
+						if(!m_macro1Enabled) {
+							m_timerCounter = m_timerCounterInit;
+							m_timerLabel.setText(m_timerCounter + "");
 						}
 					}
 				};       
 				SwingUtilities.invokeLater(doTextUpdate);
 			}
 		});
-		macro1TimerCountInput.setText(macro1TimerCounterInit.toString());
-		macro1TimerCountInput.setMinimumSize(new Dimension(3, 3));
+		m_timerCountInput.setText(m_timerCounterInit.toString());
+		m_timerCountInput.setMinimumSize(new Dimension(3, 3));
 		
-		macro1KeyPressStringLabel = new JLabel("  Key seq: ");
-		macro1KeyPressStringLabel.setForeground(Color.WHITE);
+		m_keyPressStringLabel = new JLabel("  Key seq: ");
+		m_keyPressStringLabel.setForeground(Color.WHITE);
 		
-		macro1KeyPressStringInput = new JTextField(8);
-		macro1KeyPressStringInput.getDocument().addDocumentListener(new DocumentListener() {
+		m_keyPressStringInput = new JTextField(8);
+		m_keyPressStringInput.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
 				updateKeyPressString();
 			}
@@ -221,27 +220,27 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 				Runnable doTextUpdate = new Runnable() {
 			        @Override
 			        public void run() {
-			        	macro1KeyPressString = macro1KeyPressStringInput.getText();
+			        	m_keyPressString = m_keyPressStringInput.getText();
 			        }
 			    };       
 			    SwingUtilities.invokeLater(doTextUpdate);
 			}
 		});
-		macro1KeyPressStringInput.setText(macro1KeyPressStringInit.toString());
-		macro1KeyPressStringInput.setMinimumSize(new Dimension(3, 8));
+		m_keyPressStringInput.setText(m_keyPressStringInit.toString());
+		m_keyPressStringInput.setMinimumSize(new Dimension(3, 8));
 		
 		setLayout(new FlowLayout());
 		setBackground(new Color(28,31,34));
 		
-		add(macro1StatusLabel);
-		add(macro1TimerLabel);
-		add(macro1ControlButton);
+		add(m_statusLabel);
+		add(m_timerLabel);
+		add(m_controlButton);
 		
-		add(macro1TimerCountLabel);
-		add(macro1TimerCountInput);
+		add(m_timerCountLabel);
+		add(m_timerCountInput);
 		
-		add(macro1KeyPressStringLabel);
-		add(macro1KeyPressStringInput);
+		add(m_keyPressStringLabel);
+		add(m_keyPressStringInput);
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -253,7 +252,7 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 	}
 	
 	public Integer getTimerCounter() {
-		return macro1TimerCounter;
+		return m_timerCounter;
 	}
 	
 	private boolean noStartCollisions() {
@@ -278,24 +277,24 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 	}
 	
 	private void loadKeyEventMap() {
-		keyEventLookup = new HashMap<String, Integer>();
-		keyEventLookup.put("0", KeyEvent.VK_0);
-		keyEventLookup.put("1", KeyEvent.VK_1);
-		keyEventLookup.put("2", KeyEvent.VK_2);
-		keyEventLookup.put("3", KeyEvent.VK_3);
-		keyEventLookup.put("4", KeyEvent.VK_4);
-		keyEventLookup.put("5", KeyEvent.VK_5);
-		keyEventLookup.put("6", KeyEvent.VK_6);
-		keyEventLookup.put("7", KeyEvent.VK_7);
-		keyEventLookup.put("8", KeyEvent.VK_8);
-		keyEventLookup.put("9", KeyEvent.VK_9);
+		m_keyEventLookup = new HashMap<String, Integer>();
+		m_keyEventLookup.put("0", KeyEvent.VK_0);
+		m_keyEventLookup.put("1", KeyEvent.VK_1);
+		m_keyEventLookup.put("2", KeyEvent.VK_2);
+		m_keyEventLookup.put("3", KeyEvent.VK_3);
+		m_keyEventLookup.put("4", KeyEvent.VK_4);
+		m_keyEventLookup.put("5", KeyEvent.VK_5);
+		m_keyEventLookup.put("6", KeyEvent.VK_6);
+		m_keyEventLookup.put("7", KeyEvent.VK_7);
+		m_keyEventLookup.put("8", KeyEvent.VK_8);
+		m_keyEventLookup.put("9", KeyEvent.VK_9);
 		
-		keyEventLookup.put("q", KeyEvent.VK_Q);
-		keyEventLookup.put("w", KeyEvent.VK_W);
-		keyEventLookup.put("e", KeyEvent.VK_E);
-		keyEventLookup.put("a", KeyEvent.VK_A);
-		keyEventLookup.put("s", KeyEvent.VK_S);
-		keyEventLookup.put("d", KeyEvent.VK_D);
+		m_keyEventLookup.put("q", KeyEvent.VK_Q);
+		m_keyEventLookup.put("w", KeyEvent.VK_W);
+		m_keyEventLookup.put("e", KeyEvent.VK_E);
+		m_keyEventLookup.put("a", KeyEvent.VK_A);
+		m_keyEventLookup.put("s", KeyEvent.VK_S);
+		m_keyEventLookup.put("d", KeyEvent.VK_D);
 	}
 
 
