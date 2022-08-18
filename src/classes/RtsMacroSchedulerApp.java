@@ -7,6 +7,9 @@ import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -49,8 +52,14 @@ public class RtsMacroSchedulerApp extends JPanel implements ActionListener{
 		
 		resultFrame.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		resultFrame.getContentPane().setBackground(new Color(28,31,34));
-		resultFrame.getContentPane().add(new RtsMacroSchedulerRow(20,"1q"), BorderLayout.NORTH);
-		resultFrame.getContentPane().add(new RtsMacroSchedulerRow(35,"9wwww"), BorderLayout.NORTH);
+		
+		Map<Integer, RtsMacroSchedulerRow> rows = new HashMap<Integer, RtsMacroSchedulerRow>();
+		RtsMacroSchedulerRow firstRow = new RtsMacroSchedulerRow(rows, 1, 20,"1q");
+		RtsMacroSchedulerRow secondRow = new RtsMacroSchedulerRow(rows, 2, 35,"9wwww");
+		rows.put(1, firstRow);
+		rows.put(2, secondRow);
+		resultFrame.getContentPane().add(firstRow, BorderLayout.NORTH);
+		resultFrame.getContentPane().add(secondRow, BorderLayout.NORTH);
 	}
 
 }

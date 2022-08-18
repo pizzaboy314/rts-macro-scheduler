@@ -31,6 +31,8 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private Integer m_rowId = 0;
 	private JLabel macro1StatusLabel;
 
 	private JLabel macro1TimerLabel;
@@ -45,6 +47,7 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 	private JTextField macro1KeyPressStringInput;
 	
 	private Integer macro1TimerCounter;
+
 	private Integer macro1TimerCounterInit = 20;
 	private Integer macro1TimerCounterDefault = 20;
 	
@@ -53,10 +56,14 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 	
 	private boolean macro1Enabled = false;
 	
+	private Map<Integer, RtsMacroSchedulerRow> m_allRows;
 	private Map<String, Integer> keyEventLookup;
 	private Robot VK = null;
 	
-	public RtsMacroSchedulerRow(Integer timerCounter, String keyPressString) {
+	public RtsMacroSchedulerRow(Map<Integer, RtsMacroSchedulerRow> rows, Integer id, Integer timerCounter, String keyPressString) {
+		m_allRows = rows;
+		m_rowId = id;
+		
 		if(timerCounter != null) {
 			macro1TimerCounterInit = timerCounter;
 			macro1TimerCounterDefault = timerCounter;
@@ -86,9 +93,14 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 		
 		macro1Timer = new Timer(1000,new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				macro1TimerLabel.setForeground(Color.WHITE);
-				macro1TimerLabel.setText(macro1TimerCounter + "");
-				macro1TimerCounter--;
+				if(noStartCollisions()) {
+					macro1TimerLabel.setForeground(Color.WHITE);
+					macro1TimerLabel.setText(macro1TimerCounter + "");
+					macro1TimerCounter--;
+				} else {
+					macro1TimerLabel.setForeground(Color.RED);
+					macro1TimerLabel.setText("WAIT");
+				}
 				if(macro1TimerCounter == 0) {
 					macro1TimerLabel.setForeground(Color.GREEN);
 					macro1TimerLabel.setText("QUEUE");
@@ -136,6 +148,9 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 					buttonText = "Start Macro 1";
 					statusText = " OFF ";
 					statusColor = Color.RED;
+					
+					macro1TimerLabel.setForeground(Color.WHITE);
+					macro1TimerLabel.setText(macro1TimerCounter + "");
 				}
 				
 				macro1ControlButton.setText(buttonText);
@@ -232,12 +247,33 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
         // stub
     }
+
+	public Integer getId() {
+		return m_rowId;
+	}
+	
+	public Integer getTimerCounter() {
+		return macro1TimerCounter;
+	}
+	
+	private boolean noStartCollisions() {
+		for(RtsMacroSchedulerRow row : m_allRows.values()) {
+			if(row.getId() != getId() && 
+					row.getId() < getId() &&
+					(row.getTimerCounter() == getTimerCounter() || 
+					row.getTimerCounter() == getTimerCounter()+1 || 
+					row.getTimerCounter() == getTimerCounter()-1 )) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	
 	private void keyPress(Integer keyPress) {
 		if(VK != null) {
 			VK.keyPress(keyPress);
 			VK.keyRelease(keyPress);
-			System.out.println(keyPress);
 		}
 	}
 	
@@ -261,5 +297,6 @@ public class RtsMacroSchedulerRow extends JPanel implements ActionListener{
 		keyEventLookup.put("s", KeyEvent.VK_S);
 		keyEventLookup.put("d", KeyEvent.VK_D);
 	}
+
 
 }
